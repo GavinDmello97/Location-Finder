@@ -5,6 +5,7 @@ import {
   setLoadingStatus,
   setResults,
   setSearch,
+  setSubmittedSearch,
 } from "../../redux/actionReducers/locationReducer";
 import "./LocationFinder.scss";
 import Generic from "../../component/Generic";
@@ -31,7 +32,12 @@ const LocationFinder = (props: any) => {
   const state = useSelector((state: any) => {
     return { locationState: state.locationActionReducer };
   });
-  const { search, isLoading, results: searchResults } = state.locationState;
+  const {
+    search,
+    isLoading,
+    results: searchResults,
+    submittedSearch,
+  } = state.locationState;
   console.log(searchResults, "RESULTS");
   return (
     <div className=" col-12 d-flex flex-column flex-grow-1 location-finder-container px-3">
@@ -60,23 +66,46 @@ const LocationFinder = (props: any) => {
 
       <div className=" col-12 row d-flex flex-column flex-md-row  flex-grow-1 ">
         <div className="col-12 col-md-5 col-lg-4 d-flex flex-column flex-wrap  ">
-          {searchResults && searchResults.length > 0 ? (
+          {searchResults &&
+            searchResults.length > 0 &&
+            submittedSearch.length > 0 &&
             searchResults.map((searchElement: any) => (
               <div className=" col-12 bg-white border-1 border-danger p-2 rounded mb-3">
                 <p className="fw-bold">{searchElement.display_name}</p>
                 <em className="">{searchElement.type.toUpperCase()}</em>
               </div>
-            ))
-          ) : (
-            <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
+            ))}
+          {searchResults &&
+            searchResults.length <= 0 &&
+            submittedSearch.length > 0 && (
+              <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
+                <img
+                  src={images.no_data}
+                  style={{ width: 200 }}
+                  className=" img-fluid"
+                />
+                <p className=" fw-semibold text-center px-3 pt-3">
+                  There were no results found that meet the search and follow
+                  under the category of administrator.
+                </p>
+                <em className="fw-lighter text-center mx-4">
+                  Kindly edit your search or type in something new
+                </em>
+              </div>
+            )}
+
+          {submittedSearch.length == 0 && (
+            <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
               <img
-                src={images.no_data}
-                style={{ width: 80 }}
+                src={images.location_search}
+                style={{ width: 200 }}
                 className=" img-fluid"
               />
               <p className=" fw-semibold text-center px-3 pt-3">
-                There were no results found that meet the search and follow
-                under the category of administrator.
+                Search a location
+              </p>
+              <p className="fw-lighter text-center px-3">
+                Use the search box on top to lookup a location
               </p>
             </div>
           )}
@@ -157,6 +186,7 @@ const SearchBox = ({
   const submitSearch = () => {
     removeFocus();
     getResultsFromApi(searchValue);
+    dispatch(setSubmittedSearch(searchValue));
   };
 
   const removeFocus = () => {
