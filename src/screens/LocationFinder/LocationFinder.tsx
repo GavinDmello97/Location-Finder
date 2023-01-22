@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addBulkToRecents,
+  setLoadingStatus,
+  setResults,
   setSearch,
 } from "../../redux/actionReducers/locationReducer";
 import "./LocationFinder.scss";
+import Generic from "../../component/Generic";
+import classNames from "classnames";
+import { images } from "../../configs/config";
 
 const LocationFinder = (props: any) => {
   useEffect(() => {
@@ -24,21 +29,57 @@ const LocationFinder = (props: any) => {
   const dispatch = useDispatch();
   // redux state
   const state = useSelector((state: any) => {
-    console.log(state);
     return { locationState: state.locationActionReducer };
   });
-  const { search } = state.locationState;
+  const { search, isLoading, results: searchResults } = state.locationState;
+  console.log(searchResults, "RESULTS");
   return (
-    <div className=" col-12 d-flex flex-column flex-grow-1 ">
-      <div className="col-12 p-2 border-bottom-1 border-dark border-opacity-100">
+    <div className=" col-12 d-flex flex-column flex-grow-1 location-finder-container px-3">
+      <div
+        className={classNames(
+          "col-12  pt-3  border-bottom-1 border-dark border-opacity-100",
+          isLoading ? "pb-0" : "pb-3"
+        )}
+      >
         <SearchBox
           searchValue={search}
           callback={(value: string) => dispatch(setSearch(value))}
         />
       </div>
-      <div className=" col-12 row d-flex flex-column flex-md-row bg-black flex-grow-1 ">
-        <div className="col-12 col-md-5 col-lg-4  p-2  bg-white">
-          <p></p>
+      {isLoading && (
+        <div
+          className={classNames(
+            "col-12 p-2 d-flex loader-container align-items-center",
+            isLoading ? "show-container" : "hide-container"
+          )}
+        >
+          <Generic.Loader size={20} />
+          <em className="ps-2">Fetching data from Api...</em>
+        </div>
+      )}
+
+      <div className=" col-12 row d-flex flex-column flex-md-row  flex-grow-1 ">
+        <div className="col-12 col-md-5 col-lg-4 d-flex flex-column flex-wrap  ">
+          {searchResults && searchResults.length > 0 ? (
+            searchResults.map((searchElement: any) => (
+              <div className=" col-12 bg-white border-1 border-danger p-2 rounded mb-3">
+                <p className="fw-bold">{searchElement.display_name}</p>
+                <em className="">{searchElement.type.toUpperCase()}</em>
+              </div>
+            ))
+          ) : (
+            <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
+              <img
+                src={images.no_data}
+                style={{ width: 80 }}
+                className=" img-fluid"
+              />
+              <p className=" fw-semibold text-center px-3 pt-3">
+                There were no results found that meet the search and follow
+                under the category of administrator.
+              </p>
+            </div>
+          )}
         </div>
         <div className="col-12 col-md-7 col-lg-8 bg-danger flex-grow-1">
           <p></p>
@@ -55,8 +96,74 @@ const SearchBox = ({
   searchValue: string;
   callback: Function;
 }) => {
+  const dispatch = useDispatch();
   const [isSearchFocussed, setSearchFocussed] = useState(false);
   const inputRef = useRef<null | HTMLInputElement>(null);
+
+  // cleaning the location result list
+  const filterSearchResults = (featureList: any[]) => {
+    // filtering the list for features which belong to type == "administrative" and category === "boundary"
+    var filteredList = featureList.filter(
+      (feature) =>
+        feature.properties.type === "administrative" &&
+        feature.properties.category === "boundary"
+    );
+
+    // filtering out un-used keys to get cleaner object and reduce active memory usage
+    filteredList = filteredList.map((element) => {
+      const { bbox, geometry, properties } = element || {};
+      const {
+        category,
+        display_name,
+        icon,
+        importance,
+        osm_id,
+        type,
+        extratags,
+      } = properties || {};
+
+      const { population } = extratags || {};
+      return {
+        bbox,
+        geometry,
+        category,
+        display_name,
+        icon,
+        importance,
+        osm_id,
+        type,
+        population,
+      };
+    });
+
+    return filteredList;
+  };
+
+  const getResultsFromApi = async (search: string) => {
+    await dispatch(setLoadingStatus(true));
+
+    await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${search}&format=geojson&extratags=1`
+    )
+      .then(async (response) => response.json())
+      .then(async (data) => {
+        const { features } = data || {};
+        await dispatch(setResults(filterSearchResults(features)));
+        await dispatch(setLoadingStatus(false));
+      })
+      .catch((err) => console.log("err", err));
+  };
+
+  const submitSearch = () => {
+    removeFocus();
+    getResultsFromApi(searchValue);
+  };
+
+  const removeFocus = () => {
+    setSearchFocussed(false);
+    inputRef.current?.blur();
+  };
+
   return (
     <div className="col-12 position-relative search-box">
       <div className=" col-12  rounded bg-white shadow-sm fa-border border-opacity-10 border-secondary d-flex align-items-center">
@@ -66,15 +173,15 @@ const SearchBox = ({
             onFocus={() => setSearchFocussed(true)}
             onBlur={() => setSearchFocussed(false)}
             // Add api call here
-            onKeyDown={(e) =>
-              e.key === "Enter" &&
-              (setSearchFocussed(false), inputRef.current?.blur())
-            }
-            onSubmit={() => {}}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                submitSearch();
+              }
+            }}
             type="text"
             name="name"
             placeholder="Search Location"
-            className="w-100 p-1  text-decoration-none border-0 border-white flex-1 bg-white"
+            className="w-100 p-1 text-decoration-none border-0 border-white flex-1 bg-white"
             onChange={(e) => callback(e.target.value)}
             value={searchValue}
           />
@@ -93,16 +200,24 @@ const SearchBox = ({
         </div>
 
         <button
-          className="p-2 px-3 bg-primary text-white rounded-0 rounded-end fa-border border-opacity-100 border-primary shadow-none"
+          disabled={searchValue.length < 1}
+          className={classNames(
+            "p-2 px-3  text-white rounded-0 rounded-end fa-border border-opacity-100 border-primary shadow-none",
+            searchValue && searchValue.length > 0
+              ? "bg-primary"
+              : "bg-secondary"
+          )}
           onClick={() => {
-            setSearchFocussed(false);
-            inputRef.current?.blur();
-            // Add api call here
+            submitSearch();
           }}
         >
           Search
         </button>
       </div>
+      {/* 
+        Temporary filler for recent searches!
+        CHANGE HERE
+      */}
       {isSearchFocussed && (
         <div className="position-absolute w-100 bg-white rounded-0 rounded-bottom shadow fa-border border-top-0 border-opacity-10 border-secondary py-2">
           <SearchListCard />
@@ -117,15 +232,7 @@ const SearchBox = ({
 
 const SearchListCard = () => {
   return (
-    <div
-      className="col-12 col text-start p-2 search-recent-item px-3 "
-      // style={{
-      //   borderBottom: 3,
-      //   borderWidth: 3,
-      //   borderColor: "red",
-      //   borderStyle: "solid",
-      // }}
-    >
+    <div className="col-12 col text-start p-2 search-recent-item px-3 ">
       <i className="fa fa-clock-o fa-lg pe-2 "></i>
       <span>My search element</span>
     </div>

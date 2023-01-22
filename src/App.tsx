@@ -8,6 +8,9 @@ const App = (props: any) => {
   return (
     <Provider store={store}>
       <div className="App">
+        <p className="bg-primary text-white fw-bold h3 py-2 text-wrap text-center">
+          Granular.ai Frontend Developer Take-Home Assignment
+        </p>
         <LocationFinder />
       </div>
     </Provider>

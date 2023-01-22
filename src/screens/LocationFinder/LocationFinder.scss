@@ -1,3 +1,8 @@
+.location-finder-container {
+    background-color: rgba(240,240,240,1);
+}
+
+
 .search-recent-item {
     * {
         color: #999
@@ -9,3 +14,11 @@
         font-size: 18px;
     }
 }
+
+.loader-container {
+    em {
+        color: #999
+    }
+}
+
+

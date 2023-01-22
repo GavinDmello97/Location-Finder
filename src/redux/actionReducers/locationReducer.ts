@@ -3,11 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface initialLocationState {
   search: string;
   recentSearches: string[];
+  isLoading: boolean;
+  results: any[];
 }
 
 const initialState: initialLocationState = {
   search: "",
   recentSearches: [],
+  isLoading: false,
+  results: [],
 };
 export const locationSlice = createSlice({
   name: "location",
@@ -28,10 +32,21 @@ export const locationSlice = createSlice({
         5
       );
     },
+    setLoadingStatus: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    setResults: (state, action) => {
+      state.results = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setSearch, addBulkToRecents, addSearchToRecents } =
-  locationSlice.actions;
+export const {
+  setSearch,
+  addBulkToRecents,
+  addSearchToRecents,
+  setLoadingStatus,
+  setResults,
+} = locationSlice.actions;
 export default locationSlice.reducer;
