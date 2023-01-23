@@ -8,6 +8,7 @@ import {
   setResults,
   addSearchToRecents,
   setSubmittedSearch,
+  setSelectedLocation,
 } from "../../redux/actionReducers/locationReducer";
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -26,7 +27,9 @@ export default ({
   const { submittedSearch } = state.locationState;
 
   useEffect(() => {
-    submitSearch();
+    if (searchValue && searchValue.length > 0) {
+      submitSearch();
+    }
   }, [submittedSearch]);
 
   const dispatch = useDispatch();
@@ -58,9 +61,9 @@ export default ({
           ref={inputRef}
           onFocus={() => callbackForIsSearchFocussed(true)}
           onBlur={() => callbackForIsSearchFocussed(false)}
-          // Add api call here
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            // Submit search on enter (additional feature)
+            if (e.key === "Enter" && searchValue.length > 0) {
               submitSearch();
             }
           }}
@@ -78,6 +81,9 @@ export default ({
               callbackForIsSearchFocussed(true);
               inputRef.current?.focus();
               callback("");
+              dispatch(setSubmittedSearch(""));
+              dispatch(setResults([]));
+              dispatch(setSelectedLocation(null));
             }}
           >
             <i className="fa fa-times-circle-o fa-lg text-secondary" />

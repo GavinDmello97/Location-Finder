@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { act } from "react-dom/test-utils";
 
 export interface initialLocationState {
   search: string;
   submittedSearch: string;
+  selectedLocation: any;
   recentSearches: string[];
   isLoading: boolean;
   results: any[];
@@ -11,6 +13,7 @@ export interface initialLocationState {
 const initialState: initialLocationState = {
   search: "",
   submittedSearch: "",
+  selectedLocation: null,
   recentSearches: [],
   isLoading: false,
   results: [],
@@ -48,6 +51,9 @@ export const locationSlice = createSlice({
     setResults: (state, action) => {
       state.results = action.payload;
     },
+    setSelectedLocation: (state, action) => {
+      state.selectedLocation = action.payload;
+    },
   },
 });
 
@@ -59,5 +65,6 @@ export const {
   addSearchToRecents,
   setLoadingStatus,
   setResults,
+  setSelectedLocation,
 } = locationSlice.actions;
 export default locationSlice.reducer;

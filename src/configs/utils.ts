@@ -2,25 +2,30 @@
 export const filterSearchResults = (featureList: any[]) => {
   // filtering the list for features which belong to type == "administrative" and category === "boundary"
   var filteredList = featureList.filter(
-    (feature) => feature.properties.type === "administrative"
+    (feature) => feature.type === "administrative"
   );
 
   // filtering out un-used keys to get cleaner object and reduce active memory usage
   filteredList = filteredList.map((element) => {
-    const { bbox, geometry, properties } = element || {};
     const {
-      category,
+      class: category,
       display_name,
       icon,
       importance,
       osm_id,
       type,
+      lat,
+      lon,
       extratags,
-    } = properties || {};
+      boundingbox,
+      geojson,
+    } = element || {};
 
     return {
-      bbox,
-      geometry,
+      boundingbox,
+      lat,
+      lon,
+      geojson,
       category,
       display_name,
       icon,

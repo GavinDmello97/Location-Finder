@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addBulkToRecents } from "../../redux/actionReducers/locationReducer";
+import {
+  addBulkToRecents,
+  setSelectedLocation,
+} from "../../redux/actionReducers/locationReducer";
 import "./LocationFinder.scss";
 import Generic from "../../component/Generic";
 import classNames from "classnames";
@@ -10,7 +13,6 @@ import SearchBox from "./SearchBox";
 import Map from "./Map";
 
 const LocationFinder = (props: any) => {
-  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   useEffect(() => {
     loadSearchesFromLocalStorage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,6 +36,7 @@ const LocationFinder = (props: any) => {
     isLoading,
     results: searchResults,
     submittedSearch,
+    selectedLocation,
   } = state.locationState;
 
   return (
@@ -64,25 +67,18 @@ const LocationFinder = (props: any) => {
             searchResults.length > 0 &&
             submittedSearch.length > 0 &&
             searchResults.map((searchElement: any) => (
-              <div
-                className=" col-12 bg-white border-1 border-danger p-2 rounded mb-3"
-                onClick={async () => {
-                  setSelectedLocation(searchElement);
-                  console.log("clicked", searchElement);
-                }}
-              >
-                <p className="fw-bold">{searchElement.display_name}</p>
-                <em className="">{searchElement.type.toUpperCase()}</em>
-              </div>
+              <LocationCard location={searchElement} />
             ))}
-          {searchResults &&
+          {!isLoading &&
+            searchResults &&
             searchResults.length <= 0 &&
             submittedSearch.length > 0 && (
               <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
                 <img
                   src={images.no_data}
                   style={{ width: 200 }}
-                  className=" img-fluid"
+                  className=" helper-image img-fluid"
+                  alt=""
                 />
                 <p className=" fw-semibold text-center px-3 pt-3">
                   There were no results found that meet the search and follow
@@ -97,9 +93,9 @@ const LocationFinder = (props: any) => {
           {submittedSearch.length == 0 && (
             <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
               <img
+                className="helper-image img-fluid"
                 src={images.location_search}
-                style={{ width: 200 }}
-                className=" img-fluid"
+                alt="search location"
               />
               <p className=" fw-semibold text-center px-3 pt-3">
                 Search a location
@@ -120,4 +116,20 @@ const LocationFinder = (props: any) => {
   );
 };
 
+const LocationCard = ({ location }: { location: any }) => {
+  const dispatch = useDispatch();
+
+  return (
+    <div
+      className=" col-12  border-1 border-danger p-3 rounded mb-3 location-card"
+      onClick={async () => {
+        dispatch(setSelectedLocation(location));
+        console.log("clicked", location);
+      }}
+    >
+      <p className="fw-bold">{location.display_name}</p>
+      <em className="">{location.type.toUpperCase()}</em>
+    </div>
+  );
+};
 export default LocationFinder;
