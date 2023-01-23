@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addBulkToRecents,
+  setActiveLocationCardIndex,
   setSelectedLocation,
 } from "../../redux/actionReducers/locationReducer";
 import "./LocationFinder.scss";
@@ -65,10 +66,7 @@ const LocationFinder = (props: any) => {
         <div className="col-12 col-md-5 col-lg-4 d-flex flex-column flex-wrap  ">
           {searchResults &&
             searchResults.length > 0 &&
-            submittedSearch.length > 0 &&
-            searchResults.map((searchElement: any) => (
-              <LocationCard location={searchElement} />
-            ))}
+            submittedSearch.length > 0 && <LocationList data={searchResults} />}
           {!isLoading &&
             searchResults &&
             searchResults.length <= 0 &&
@@ -116,19 +114,52 @@ const LocationFinder = (props: any) => {
   );
 };
 
-const LocationCard = ({ location }: { location: any }) => {
+const LocationList = ({ data = [] }: { data: any[] }) => {
+  return (
+    <div>
+      {data.map((searchElement: any, index: number) => (
+        <LocationCard key={index} index={index} location={searchElement} />
+      ))}
+    </div>
+  );
+};
+
+const LocationCard = ({
+  index,
+  location,
+}: {
+  index: number;
+  location: any;
+}) => {
   const dispatch = useDispatch();
+  // redux state
+  const state = useSelector((state: any) => {
+    return { locationState: state.locationActionReducer };
+  });
+  const { activeCardIndex } = state.locationState;
 
   return (
     <div
       className=" col-12  border-1 border-danger p-3 rounded mb-3 location-card"
       onClick={async () => {
+        dispatch(setActiveLocationCardIndex(index));
         dispatch(setSelectedLocation(location));
-        console.log("clicked", location);
       }}
     >
       <p className="fw-bold">{location.display_name}</p>
-      <em className="">{location.type.toUpperCase()}</em>
+      <p>{location.type.toUpperCase()}</p>
+
+      <div
+        className={classNames(
+          activeCardIndex === index
+            ? "location-card-additional-info-show"
+            : "d-none",
+          "mt-2"
+        )}
+      >
+        <p>Population: {location.population}</p>
+        <p>Population Recorded Date: {location.population_date}</p>
+      </div>
     </div>
   );
 };

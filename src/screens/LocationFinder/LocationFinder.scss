@@ -47,3 +47,13 @@
 .helper-image {
     width: 200
 }
+
+.location-card-additional-info-show {
+    animation:  0.5s ease slideInFromTop;
+}
+
+@keyframes slideInFromTop {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+

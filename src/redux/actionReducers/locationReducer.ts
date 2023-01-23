@@ -8,6 +8,7 @@ export interface initialLocationState {
   recentSearches: string[];
   isLoading: boolean;
   results: any[];
+  activeCardIndex: number | null;
 }
 
 const initialState: initialLocationState = {
@@ -17,6 +18,7 @@ const initialState: initialLocationState = {
   recentSearches: [],
   isLoading: false,
   results: [],
+  activeCardIndex: null,
 };
 export const locationSlice = createSlice({
   name: "location",
@@ -54,6 +56,9 @@ export const locationSlice = createSlice({
     setSelectedLocation: (state, action) => {
       state.selectedLocation = action.payload;
     },
+    setActiveLocationCardIndex: (state, action) => {
+      state.activeCardIndex = action.payload;
+    },
   },
 });
 
@@ -66,5 +71,6 @@ export const {
   setLoadingStatus,
   setResults,
   setSelectedLocation,
+  setActiveLocationCardIndex,
 } = locationSlice.actions;
 export default locationSlice.reducer;
