@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addBulkToRecents,
-  setLoadingStatus,
-  setResults,
-  setSearch,
-  setSubmittedSearch,
-} from "../../redux/actionReducers/locationReducer";
+import { addBulkToRecents } from "../../redux/actionReducers/locationReducer";
 import "./LocationFinder.scss";
 import Generic from "../../component/Generic";
 import classNames from "classnames";
 import { images } from "../../configs/config";
 
+import SearchBox from "./SearchBox";
+import Map from "./Map";
+
 const LocationFinder = (props: any) => {
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   useEffect(() => {
     loadSearchesFromLocalStorage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,24 +31,20 @@ const LocationFinder = (props: any) => {
     return { locationState: state.locationActionReducer };
   });
   const {
-    search,
     isLoading,
     results: searchResults,
     submittedSearch,
   } = state.locationState;
-  console.log(searchResults, "RESULTS");
+
   return (
-    <div className=" col-12 d-flex flex-column flex-grow-1 location-finder-container px-3">
+    <div className=" col-12 d-flex flex-column flex-grow-1 location-finder-container px-3 pb-3">
       <div
         className={classNames(
           "col-12  pt-3  border-bottom-1 border-dark border-opacity-100",
           isLoading ? "pb-0" : "pb-3"
         )}
       >
-        <SearchBox
-          searchValue={search}
-          callback={(value: string) => dispatch(setSearch(value))}
-        />
+        <SearchBox />
       </div>
       {isLoading && (
         <div
@@ -70,7 +64,13 @@ const LocationFinder = (props: any) => {
             searchResults.length > 0 &&
             submittedSearch.length > 0 &&
             searchResults.map((searchElement: any) => (
-              <div className=" col-12 bg-white border-1 border-danger p-2 rounded mb-3">
+              <div
+                className=" col-12 bg-white border-1 border-danger p-2 rounded mb-3"
+                onClick={async () => {
+                  setSelectedLocation(searchElement);
+                  console.log("clicked", searchElement);
+                }}
+              >
                 <p className="fw-bold">{searchElement.display_name}</p>
                 <em className="">{searchElement.type.toUpperCase()}</em>
               </div>
@@ -110,161 +110,12 @@ const LocationFinder = (props: any) => {
             </div>
           )}
         </div>
-        <div className="col-12 col-md-7 col-lg-8 bg-danger flex-grow-1">
-          <p></p>
+        <div className="col-12 col-md-7 col-lg-8  flex-grow-1 ps-md-3 ">
+          <div className="leaflet-container " style={{ zIndex: 0 }}>
+            <Map selectedLocation={selectedLocation} />
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const SearchBox = ({
-  searchValue = "",
-  callback = () => {},
-}: {
-  searchValue: string;
-  callback: Function;
-}) => {
-  const dispatch = useDispatch();
-  const [isSearchFocussed, setSearchFocussed] = useState(false);
-  const inputRef = useRef<null | HTMLInputElement>(null);
-
-  // cleaning the location result list
-  const filterSearchResults = (featureList: any[]) => {
-    // filtering the list for features which belong to type == "administrative" and category === "boundary"
-    var filteredList = featureList.filter(
-      (feature) =>
-        feature.properties.type === "administrative" &&
-        feature.properties.category === "boundary"
-    );
-
-    // filtering out un-used keys to get cleaner object and reduce active memory usage
-    filteredList = filteredList.map((element) => {
-      const { bbox, geometry, properties } = element || {};
-      const {
-        category,
-        display_name,
-        icon,
-        importance,
-        osm_id,
-        type,
-        extratags,
-      } = properties || {};
-
-      const { population } = extratags || {};
-      return {
-        bbox,
-        geometry,
-        category,
-        display_name,
-        icon,
-        importance,
-        osm_id,
-        type,
-        population,
-      };
-    });
-
-    return filteredList;
-  };
-
-  const getResultsFromApi = async (search: string) => {
-    await dispatch(setLoadingStatus(true));
-
-    await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${search}&format=geojson&extratags=1`
-    )
-      .then(async (response) => response.json())
-      .then(async (data) => {
-        const { features } = data || {};
-        await dispatch(setResults(filterSearchResults(features)));
-        await dispatch(setLoadingStatus(false));
-      })
-      .catch((err) => console.log("err", err));
-  };
-
-  const submitSearch = () => {
-    removeFocus();
-    getResultsFromApi(searchValue);
-    dispatch(setSubmittedSearch(searchValue));
-  };
-
-  const removeFocus = () => {
-    setSearchFocussed(false);
-    inputRef.current?.blur();
-  };
-
-  return (
-    <div className="col-12 position-relative search-box">
-      <div className=" col-12  rounded bg-white shadow-sm fa-border border-opacity-10 border-secondary d-flex align-items-center">
-        <div className="flex-grow-1 d-flex px-3">
-          <input
-            ref={inputRef}
-            onFocus={() => setSearchFocussed(true)}
-            onBlur={() => setSearchFocussed(false)}
-            // Add api call here
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                submitSearch();
-              }
-            }}
-            type="text"
-            name="name"
-            placeholder="Search Location"
-            className="w-100 p-1 text-decoration-none border-0 border-white flex-1 bg-white"
-            onChange={(e) => callback(e.target.value)}
-            value={searchValue}
-          />
-          {searchValue && searchValue.length > 0 && (
-            <button
-              className="bg-white border-0"
-              onClick={() => {
-                setSearchFocussed(true);
-                inputRef.current?.focus();
-                callback("");
-              }}
-            >
-              <i className="fa fa-times-circle-o fa-lg text-secondary" />
-            </button>
-          )}
-        </div>
-
-        <button
-          disabled={searchValue.length < 1}
-          className={classNames(
-            "p-2 px-3  text-white rounded-0 rounded-end fa-border border-opacity-100 border-primary shadow-none",
-            searchValue && searchValue.length > 0
-              ? "bg-primary"
-              : "bg-secondary"
-          )}
-          onClick={() => {
-            submitSearch();
-          }}
-        >
-          Search
-        </button>
-      </div>
-      {/* 
-        Temporary filler for recent searches!
-        CHANGE HERE
-      */}
-      {isSearchFocussed && (
-        <div className="position-absolute w-100 bg-white rounded-0 rounded-bottom shadow fa-border border-top-0 border-opacity-10 border-secondary py-2">
-          <SearchListCard />
-          <SearchListCard />
-          <SearchListCard />
-          <SearchListCard />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const SearchListCard = () => {
-  return (
-    <div className="col-12 col text-start p-2 search-recent-item px-3 ">
-      <i className="fa fa-clock-o fa-lg pe-2 "></i>
-      <span>My search element</span>
     </div>
   );
 };
