@@ -1,5 +1,6 @@
 .location-finder-container {
     background-color: rgba(240,240,240,1);
+    
 }
 
 
@@ -26,13 +27,21 @@
     background-color: rgba(240,240,240,1);}
 
 
+.clickable:active {
+    opacity: 0.5;
+}
 
 
 
 
 .location-card { 
-    background-color: white;
+    background-color: rgba(255, 255, 255,0.6);
     transition: all .2s ease-in-out; 
+}
+
+.location-card-selected {
+    background-color: rgb(255, 255, 255);
+
 }
     
 .location-card:hover { 

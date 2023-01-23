@@ -9,6 +9,7 @@ export interface initialLocationState {
   isLoading: boolean;
   results: any[];
   activeCardIndex: number | null;
+  linkParams: URLSearchParams;
 }
 
 const initialState: initialLocationState = {
@@ -19,12 +20,13 @@ const initialState: initialLocationState = {
   isLoading: false,
   results: [],
   activeCardIndex: null,
+  linkParams: new URLSearchParams(),
 };
 export const locationSlice = createSlice({
   name: "location",
   initialState,
   reducers: {
-    setSearch: (state, action) => {
+    setSearch: (state, action: { payload: string }) => {
       state.search = action.payload;
     },
     setSubmittedSearch: (state, action) => {
@@ -56,8 +58,9 @@ export const locationSlice = createSlice({
     setSelectedLocation: (state, action) => {
       state.selectedLocation = action.payload;
     },
-    setActiveLocationCardIndex: (state, action) => {
-      state.activeCardIndex = action.payload;
+    setLinkParams: (state, action: { payload: URLSearchParams }) => {
+      console.log("here");
+      state.linkParams = action.payload;
     },
   },
 });
@@ -71,6 +74,6 @@ export const {
   setLoadingStatus,
   setResults,
   setSelectedLocation,
-  setActiveLocationCardIndex,
+  setLinkParams,
 } = locationSlice.actions;
 export default locationSlice.reducer;

@@ -30,8 +30,8 @@ export default () => {
           className="position-absolute w-100 bg-white rounded-0 rounded-bottom shadow fa-border border-top-0 border-opacity-10 border-secondary py-2"
           style={{ zIndex: 2000 }}
         >
-          {recentSearches.map((searchElement: string) => (
-            <RecentSearchListCard value={searchElement} />
+          {recentSearches.map((searchElement: string, index: number) => (
+            <RecentSearchListCard key={index} value={searchElement} />
           ))}
         </div>
       )}

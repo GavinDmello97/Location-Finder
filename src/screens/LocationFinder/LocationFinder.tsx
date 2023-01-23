@@ -1,23 +1,85 @@
+// packages
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import classNames from "classnames";
+
+// css
+import "./LocationFinder.scss";
+
+// store
 import {
   addBulkToRecents,
-  setActiveLocationCardIndex,
+  setLinkParams,
+  setLoadingStatus,
+  setResults,
+  setSearch,
   setSelectedLocation,
+  setSubmittedSearch,
 } from "../../redux/actionReducers/locationReducer";
-import "./LocationFinder.scss";
-import Generic from "../../component/Generic";
-import classNames from "classnames";
-import { images } from "../../configs/config";
 
+// asset imports
+import { images } from "../../configs/imports";
+
+// components
+import Generic from "../../component/Generic";
 import SearchBox from "./SearchBox";
 import Map from "./Map";
+import { apiCaller } from "../../configs/apiCallers";
+import { filterSearchResults, showAllKeys } from "../../configs/utils";
 
 const LocationFinder = (props: any) => {
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams({});
+
+  // redux state
+  const state = useSelector((state: any) => {
+    return { locationState: state.locationActionReducer };
+  });
+  const {
+    isLoading,
+    results: searchResults,
+    submittedSearch,
+    selectedLocation,
+    linkParams,
+  } = state.locationState;
+
   useEffect(() => {
     loadSearchesFromLocalStorage();
+    dispatch(setLinkParams(searchParams));
+    const search = searchParams.get("search");
+    if (search) {
+      loadFromParams(search);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadFromParams = async (search: string) => {
+    await dispatch(setSearch(search));
+    await dispatch(setSubmittedSearch(search));
+
+    var results = await getResultsFromApi(search);
+    await dispatch(setResults(results));
+
+    const selectedLocationOSMId = searchParams.get("activeLocation");
+    if (selectedLocationOSMId) {
+      console.log("ACTIVE", selectedLocationOSMId, results);
+      var selectedLocation = results.filter(
+        (x: any) => x.place_id == selectedLocationOSMId
+      );
+      if (selectedLocation && selectedLocation.length > 0) {
+        await dispatch(setSelectedLocation(selectedLocation[0]));
+      }
+    }
+  };
+
+  const getResultsFromApi = async (search: string) => {
+    await dispatch(setLoadingStatus(true));
+    var features = await apiCaller(search);
+    const filteredData = filterSearchResults(features);
+    await dispatch(setLoadingStatus(false));
+    return filteredData;
+  };
 
   const loadSearchesFromLocalStorage = async () => {
     const recentSearchesJSONString = await localStorage.getItem(
@@ -28,20 +90,32 @@ const LocationFinder = (props: any) => {
       dispatch(addBulkToRecents(recentSearchJSON));
     }
   };
-  const dispatch = useDispatch();
-  // redux state
-  const state = useSelector((state: any) => {
-    return { locationState: state.locationActionReducer };
-  });
-  const {
-    isLoading,
-    results: searchResults,
-    submittedSearch,
-    selectedLocation,
-  } = state.locationState;
 
   return (
-    <div className=" col-12 d-flex flex-column flex-grow-1 location-finder-container px-3 pb-3">
+    <div className="  mx-0 col-12 d-flex flex-column location-finder-container px-3 pb-3">
+      <div className="col-12 d-flex align-items-center justify-content-between py-3">
+        <div className="flex-1 d-flex py-3 align-items-center clickable ">
+          <i
+            className="fa fa-map fa-lg text-primary"
+            style={{ fontSize: 30 }}
+          ></i>
+
+          <p
+            className="fw-bold p-0 m-0 px-2"
+            style={{ fontSize: 40, lineHeight: "10px" }}
+          >
+            Location Finder
+          </p>
+        </div>
+        <div className="d-flex">
+          <i
+            onClick={async () => {}}
+            className="fa fa-share-alt clickable"
+            aria-hidden="true"
+            style={{ fontSize: 20 }}
+          ></i>
+        </div>
+      </div>
       <div
         className={classNames(
           "col-12  pt-3  border-bottom-1 border-dark border-opacity-100",
@@ -62,11 +136,15 @@ const LocationFinder = (props: any) => {
         </div>
       )}
 
-      <div className=" col-12 row d-flex flex-column flex-md-row  flex-grow-1 ">
-        <div className="col-12 col-md-5 col-lg-4 d-flex flex-column flex-wrap  ">
+      <div className=" col-12 row m-0 d-flex flex-column flex-md-row  flex-grow-1 ">
+        <div className="col-12 col-md-5 col-lg-4 d-flex flex-column flex-wrap ps-0 pe-0 pe-md-3 ">
           {searchResults &&
             searchResults.length > 0 &&
-            submittedSearch.length > 0 && <LocationList data={searchResults} />}
+            submittedSearch.length > 0 && (
+              <div className="col-12 p-0 m-0">
+                <LocationList data={searchResults} />
+              </div>
+            )}
           {!isLoading &&
             searchResults &&
             searchResults.length <= 0 &&
@@ -88,8 +166,8 @@ const LocationFinder = (props: any) => {
               </div>
             )}
 
-          {submittedSearch.length == 0 && (
-            <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
+          {submittedSearch.length === 0 && (
+            <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center ">
               <img
                 className="helper-image img-fluid"
                 src={images.location_search}
@@ -104,7 +182,10 @@ const LocationFinder = (props: any) => {
             </div>
           )}
         </div>
-        <div className="col-12 col-md-7 col-lg-8  flex-grow-1 ps-md-3 ">
+        <div
+          className="col-12 col-md-7 col-lg-8  flex-grow-1 p-0 sticky-top  "
+          style={{ height: "80vh" }}
+        >
           <div className="leaflet-container " style={{ zIndex: 0 }}>
             <Map selectedLocation={selectedLocation} />
           </div>
@@ -116,49 +197,60 @@ const LocationFinder = (props: any) => {
 
 const LocationList = ({ data = [] }: { data: any[] }) => {
   return (
-    <div>
+    <div className="col-12">
       {data.map((searchElement: any, index: number) => (
-        <LocationCard key={index} index={index} location={searchElement} />
+        <LocationCard key={index} location={searchElement} />
       ))}
     </div>
   );
 };
 
-const LocationCard = ({
-  index,
-  location,
-}: {
-  index: number;
-  location: any;
-}) => {
+const LocationCard = ({ location }: { location: any }) => {
   const dispatch = useDispatch();
+
   // redux state
   const state = useSelector((state: any) => {
     return { locationState: state.locationActionReducer };
   });
-  const { activeCardIndex } = state.locationState;
+  const { selectedLocation, linkParams } = state.locationState;
+  const [searchParams, setSearchParams] = useSearchParams(linkParams);
 
   return (
     <div
-      className=" col-12  border-1 border-danger p-3 rounded mb-3 location-card"
+      className={classNames(
+        " col-12 border-1 border-danger m-0 p-3 rounded mb-3 location-card",
+        selectedLocation && selectedLocation.place_id === location.place_id
+          ? "location-card-selected"
+          : ""
+      )}
       onClick={async () => {
-        dispatch(setActiveLocationCardIndex(index));
         dispatch(setSelectedLocation(location));
+        linkParams.set("activeLocation", location.place_id);
+        await dispatch(setLinkParams(linkParams));
+        setSearchParams(linkParams);
       }}
     >
-      <p className="fw-bold">{location.display_name}</p>
-      <p>{location.type.toUpperCase()}</p>
+      <p className="col-12 fw-bold m-0">{location.display_name}</p>
+      <p className="text-secondary m-0" style={{ fontSize: 12 }}>
+        {location.type.toUpperCase()}
+      </p>
 
       <div
         className={classNames(
-          activeCardIndex === index
+          "col-12",
+          selectedLocation && selectedLocation.place_id === location.place_id
             ? "location-card-additional-info-show"
             : "d-none",
           "mt-2"
         )}
       >
-        <p>Population: {location.population}</p>
-        <p>Population Recorded Date: {location.population_date}</p>
+        <p className="m-0" style={{ fontSize: 14 }}>
+          <span className="fw-semibold">Population:</span> {location.population}
+        </p>
+        <p className="m-0" style={{ fontSize: 14 }}>
+          <span className="fw-semibold">Population Recorded Date:</span>{" "}
+          {location.population_date}
+        </p>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export const filterSearchResults = (featureList: any[]) => {
       icon,
       importance,
       osm_id,
+      place_id,
       type,
       lat,
       lon,
@@ -31,11 +32,20 @@ export const filterSearchResults = (featureList: any[]) => {
       icon,
       importance,
       osm_id,
+      place_id,
       type,
-      population: extratags["population"] || "No Data Available",
-      population_date: extratags["population:date"] || "No Data Available",
+      population: extratags["population"] || "No Data Recorded",
+      population_date: extratags["population:date"] || "No Data Recorded",
     };
   });
 
+  // console.log("filteredList", filteredList);
+
   return filteredList;
+};
+
+export const showAllKeys = (data: any) => {
+  for (const [key, value] of data) {
+    console.log("KEYS", key, value);
+  }
 };

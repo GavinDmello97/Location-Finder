@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { apiCaller } from "../../configs/apiCallers";
 import { filterSearchResults } from "../../configs/utils";
 import {
@@ -9,6 +10,7 @@ import {
   addSearchToRecents,
   setSubmittedSearch,
   setSelectedLocation,
+  setLinkParams,
 } from "../../redux/actionReducers/locationReducer";
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -21,10 +23,13 @@ export default ({
   callback: Function;
   callbackForIsSearchFocussed: Function;
 }) => {
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams({});
+
   const state = useSelector((state: any) => {
     return { locationState: state.locationActionReducer };
   });
-  const { submittedSearch } = state.locationState;
+  const { submittedSearch, linkParams, results } = state.locationState;
 
   useEffect(() => {
     if (searchValue && searchValue.length > 0) {
@@ -32,7 +37,6 @@ export default ({
     }
   }, [submittedSearch]);
 
-  const dispatch = useDispatch();
   const inputRef = useRef<null | HTMLInputElement>(null);
 
   const getResultsFromApi = async (search: string) => {
@@ -45,8 +49,13 @@ export default ({
   const submitSearch = async () => {
     await dispatch(addSearchToRecents(searchValue));
     removeFocus();
-    getResultsFromApi(searchValue);
+    await getResultsFromApi(searchValue);
     dispatch(setSubmittedSearch(searchValue));
+    if (results && results.length > 0) {
+      dispatch(setSelectedLocation(results[0]));
+    } else {
+      // dispatch(setSelectedLocation(null));
+    }
   };
 
   const removeFocus = () => {
@@ -61,10 +70,14 @@ export default ({
           ref={inputRef}
           onFocus={() => callbackForIsSearchFocussed(true)}
           onBlur={() => callbackForIsSearchFocussed(false)}
-          onKeyDown={(e) => {
+          onKeyDown={async (e) => {
             // Submit search on enter (additional feature)
             if (e.key === "Enter" && searchValue.length > 0) {
-              submitSearch();
+              await submitSearch();
+              linkParams.set("search", searchValue);
+              linkParams.delete("activeLocation");
+              await dispatch(setLinkParams(linkParams));
+              setSearchParams(linkParams);
             }
           }}
           type="text"
@@ -84,6 +97,8 @@ export default ({
               dispatch(setSubmittedSearch(""));
               dispatch(setResults([]));
               dispatch(setSelectedLocation(null));
+              searchParams.delete("search");
+              setSearchParams({ ...searchParams });
             }}
           >
             <i className="fa fa-times-circle-o fa-lg text-secondary" />
@@ -99,8 +114,12 @@ export default ({
             ? "bg-primary border-primary"
             : "bg-secondary border-secondary"
         )}
-        onClick={() => {
-          submitSearch();
+        onClick={async () => {
+          await submitSearch();
+          linkParams.set("search", searchValue);
+          linkParams.delete("activeLocation");
+          await dispatch(setLinkParams(linkParams));
+          setSearchParams(linkParams);
         }}
       >
         Search

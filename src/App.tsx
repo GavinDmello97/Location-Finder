@@ -3,15 +3,20 @@ import "./App.scss";
 import { Provider } from "react-redux";
 import { store } from "./redux/config/configureStore";
 import LocationFinder from "./screens/LocationFinder/LocationFinder";
+import { Route, Routes } from "react-router";
+import { Navigate } from "react-router-dom";
 
 const App = (props: any) => {
   return (
     <Provider store={store}>
-      <div className="App">
-        <p className="bg-primary text-white fw-bold h3 py-2 text-wrap text-center">
+      <div className=" col-12 d-flex">
+        {/* <p className="bg-primary text-white fw-bold h3 py-2 text-wrap text-center">
           Granular.ai Frontend Developer Take-Home Assignment
-        </p>
-        <LocationFinder />
+        </p> */}
+        <Routes>
+          <Route path="/" element={<LocationFinder />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </Provider>
   );
