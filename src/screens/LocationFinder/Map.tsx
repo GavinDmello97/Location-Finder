@@ -1294,7 +1294,7 @@ export default ({ selectedLocation }: { selectedLocation: any }) => {
                 Population: {selectedLocation.population}
               </p>
               <p className="m-0 p-0">
-                Population Date: {selectedLocation.population_date}
+                Population Recorded Date: {selectedLocation.population_date}
               </p>
             </div>
           </Popup>
