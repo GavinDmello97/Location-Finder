@@ -46,7 +46,6 @@ const RecentSearchListCard = ({ value = "s" }) => {
     <div
       className="col-12 col text-start p-2 search-recent-item px-3 "
       onClick={() => {
-        console.log("ehreee");
         dispatch(setSearch(value));
         dispatch(setSubmittedSearch(value));
       }}
