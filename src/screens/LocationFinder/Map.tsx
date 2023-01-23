@@ -1300,9 +1300,6 @@ export default ({ selectedLocation }: { selectedLocation: any }) => {
           </Popup>
         </Polygon>
       )}
-      {/* <Marker position={[42.3554334, -71.060511]}>
-     
-    </Marker> */}
     </MapContainer>
   );
 };
