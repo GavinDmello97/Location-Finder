@@ -1,6 +1,6 @@
 import classNames from "classnames";
-import { useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { apiCaller } from "../../configs/apiCallers";
 import { filterSearchResults } from "../../configs/utils";
 import {
@@ -20,6 +20,15 @@ export default ({
   callback: Function;
   callbackForIsSearchFocussed: Function;
 }) => {
+  const state = useSelector((state: any) => {
+    return { locationState: state.locationActionReducer };
+  });
+  const { submittedSearch } = state.locationState;
+
+  useEffect(() => {
+    submitSearch();
+  }, [submittedSearch]);
+
   const dispatch = useDispatch();
   const inputRef = useRef<null | HTMLInputElement>(null);
 

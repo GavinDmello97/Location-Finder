@@ -5,8 +5,6 @@ export const filterSearchResults = (featureList: any[]) => {
     (feature) => feature.properties.type === "administrative"
   );
 
-  console.log("here", filteredList);
-
   // filtering out un-used keys to get cleaner object and reduce active memory usage
   filteredList = filteredList.map((element) => {
     const { bbox, geometry, properties } = element || {};
@@ -29,8 +27,8 @@ export const filterSearchResults = (featureList: any[]) => {
       importance,
       osm_id,
       type,
-      population: extratags["population"],
-      population_date: extratags["population:date"],
+      population: extratags["population"] || "No Data Available",
+      population_date: extratags["population:date"] || "No Data Available",
     };
   });
 

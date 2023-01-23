@@ -26,12 +26,17 @@ export const locationSlice = createSlice({
       state.submittedSearch = action.payload;
     },
     addBulkToRecents: (state, action) => {
-      var result = [...action.payload, ...state.recentSearches].splice(0, 5);
-      state.recentSearches = result;
-      localStorage.setItem("recentSearches", JSON.stringify(result));
+      if (action.payload && action.payload.length > 0) {
+        var result = [...action.payload, ...state.recentSearches].splice(0, 5);
+        state.recentSearches = result;
+      }
     },
     addSearchToRecents: (state, action) => {
-      if (!state.recentSearches.includes(action.payload)) {
+      if (
+        action.payload &&
+        action.payload.length > 0 &&
+        !state.recentSearches.includes(action.payload)
+      ) {
         var result = [action.payload, ...state.recentSearches].splice(0, 5);
         state.recentSearches = result;
         localStorage.setItem("recentSearches", JSON.stringify(result));

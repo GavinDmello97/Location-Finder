@@ -76,12 +76,22 @@ export default ({ selectedLocation }: { selectedLocation: any }) => {
           positions={selectedLocation.geometry.coordinates[0].map(
             (x: string[]) => [...x].reverse()
           )}
-        />
+        >
+          <Popup>
+            <div className="p-2 px-3">
+              <b className="m-0 p-0">{selectedLocation.display_name}</b>
+              <p className="m-0 p-0">
+                Population: {selectedLocation.population}
+              </p>
+              <p className="m-0 p-0">
+                Population Date: {selectedLocation.population_date}
+              </p>
+            </div>
+          </Popup>
+        </Polygon>
       )}
       {/* <Marker position={[42.3554334, -71.060511]}>
-      <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
-      </Popup>
+     
     </Marker> */}
     </MapContainer>
   );
