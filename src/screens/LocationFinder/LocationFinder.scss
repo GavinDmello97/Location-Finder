@@ -1,0 +1,136 @@
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Opera and Firefox */
+  }
+
+
+.location-finder-container {
+    background-color: rgba(240,240,240,1);
+}
+
+.pop-up {
+    position: absolute;
+    padding: 10px;
+    border-radius: 5px;
+    right: 0;
+    top: 30px;
+    z-index: 2500
+}
+
+.notify-popup {
+    width: fit-content;
+    block-size: fit-content;
+    top: 4%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(89, 156, 255, 1);
+    z-index: 3000
+
+}
+
+.notify-popup-show {
+    display: block;
+    animation: 0.5s ease showPopup;
+
+}
+.notify-popup-hide {
+    animation: 0.5s ease hidePopup;
+}
+
+@keyframes showPopup {
+    from { transform: translate(-50%, -90%); opacity: 0; display: none;}
+    to { transform: translate(-50%, -50%); opacity: 1;display: block; }
+}
+@keyframes hidePopup {
+    from { transform: translate(-50%, -50%); opacity: 1; display: block;}
+    to { transform: translate(-50%, -90%); opacity: 0; display: none;}
+}
+
+
+.share-button {
+    background-color: rgb(192, 192, 192);
+}
+
+
+
+
+.search-recent-item {
+    * {
+        color: #999
+    }
+}
+
+.search-box {
+    input, button {
+        font-size: 18px;
+    }
+}
+
+.loader-container {
+    em {
+        color: #999
+    }
+}
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(240,240,240,1);
+    z-index: 0;
+}
+
+
+
+.clickable:active {
+    opacity: 0.5;
+}
+
+
+
+
+.location-card { 
+    background-color: rgba(255, 255, 255,0.6);
+    transition: all .2s ease-in-out; 
+}
+
+.location-card-selected {
+    background-color: rgb(255, 255, 255);
+
+}
+    
+.location-card:hover { 
+    transform: scale(1.02); 
+}
+.location-card:active { 
+    opacity: 0.8;
+    background-color: rgba(12,109,253, 0.3);
+    
+}
+
+.location-card-type {
+    font-size: 12px;
+}
+
+
+.location-card-additional-info {
+    p {
+        font-size: 14px;
+    }
+}
+
+
+
+.location-card-additional-info-show {
+    animation:  0.5s ease slideInFromTop;
+}
+
+@keyframes slideInFromTop {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
