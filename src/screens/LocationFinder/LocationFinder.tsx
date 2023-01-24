@@ -26,9 +26,10 @@ import Generic from "../../component/Generic";
 import SearchBox from "./SearchBox";
 import Map from "./Map";
 import { apiCaller } from "../../configs/apiCallers";
-import { filterSearchResults, showAllKeys } from "../../configs/utils";
+import { filterSearchResults } from "../../configs/utils";
+import LocationHeader from "./LocationHeader";
 
-const LocationFinder = (props: any) => {
+const LocationFinder = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams({});
 
@@ -41,7 +42,6 @@ const LocationFinder = (props: any) => {
     results: searchResults,
     submittedSearch,
     selectedLocation,
-    linkParams,
   } = state.locationState;
 
   useEffect(() => {
@@ -63,12 +63,13 @@ const LocationFinder = (props: any) => {
 
     const selectedLocationOSMId = searchParams.get("activeLocation");
     if (selectedLocationOSMId) {
-      console.log("ACTIVE", selectedLocationOSMId, results);
       var selectedLocation = results.filter(
-        (x: any) => x.place_id == selectedLocationOSMId
+        (x: any) => x.place_id.toString() === selectedLocationOSMId
       );
       if (selectedLocation && selectedLocation.length > 0) {
         await dispatch(setSelectedLocation(selectedLocation[0]));
+      } else {
+        await dispatch(setSelectedLocation(results[0]));
       }
     }
   };
@@ -92,30 +93,9 @@ const LocationFinder = (props: any) => {
   };
 
   return (
-    <div className="  mx-0 col-12 d-flex flex-column location-finder-container px-3 pb-3">
-      <div className="col-12 d-flex align-items-center justify-content-between py-3">
-        <div className="flex-1 d-flex py-3 align-items-center clickable ">
-          <i
-            className="fa fa-map fa-lg text-primary"
-            style={{ fontSize: 30 }}
-          ></i>
+    <div className="  mx-0 col-12 d-flex flex-column location-finder-container px-3 pb-3 position-relative">
+      <LocationHeader />
 
-          <p
-            className="fw-bold p-0 m-0 px-2"
-            style={{ fontSize: 40, lineHeight: "10px" }}
-          >
-            Location Finder
-          </p>
-        </div>
-        <div className="d-flex">
-          <i
-            onClick={async () => {}}
-            className="fa fa-share-alt clickable"
-            aria-hidden="true"
-            style={{ fontSize: 20 }}
-          ></i>
-        </div>
-      </div>
       <div
         className={classNames(
           "col-12  pt-3  border-bottom-1 border-dark border-opacity-100",

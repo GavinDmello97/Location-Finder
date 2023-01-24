@@ -29,32 +29,33 @@ export default ({
   const state = useSelector((state: any) => {
     return { locationState: state.locationActionReducer };
   });
-  const { submittedSearch, linkParams, results } = state.locationState;
+  const { submittedSearch, linkParams } = state.locationState;
 
-  useEffect(() => {
-    if (searchValue && searchValue.length > 0) {
-      submitSearch();
-    }
-  }, [submittedSearch]);
+  // useEffect(() => {
+  //   if (searchValue && searchValue.length > 0) {
+  //     submitSearch();
+  //   }
+  // }, [submittedSearch]);
 
   const inputRef = useRef<null | HTMLInputElement>(null);
 
   const getResultsFromApi = async (search: string) => {
     await dispatch(setLoadingStatus(true));
     var features = await apiCaller(search);
-    await dispatch(setResults(filterSearchResults(features)));
+    const filteredData = filterSearchResults(features);
     await dispatch(setLoadingStatus(false));
+    return filteredData;
   };
 
   const submitSearch = async () => {
     await dispatch(addSearchToRecents(searchValue));
     removeFocus();
-    await getResultsFromApi(searchValue);
+    var results = await getResultsFromApi(searchValue);
+    dispatch(setResults(results));
     dispatch(setSubmittedSearch(searchValue));
+    console.log("ReSULTS", results[0]);
     if (results && results.length > 0) {
       dispatch(setSelectedLocation(results[0]));
-    } else {
-      // dispatch(setSelectedLocation(null));
     }
   };
 
@@ -64,8 +65,8 @@ export default ({
   };
 
   return (
-    <div className=" col-12  rounded bg-white shadow-sm fa-border border-opacity-10 border-secondary d-flex align-items-center">
-      <div className="flex-grow-1 d-flex px-3">
+    <div className=" col-12  rounded-3 bg-white shadow-sm fa-border border-opacity-10 border-secondary d-flex align-items-center">
+      <div className="flex-grow-1 d-flex px-2">
         <input
           ref={inputRef}
           onFocus={() => callbackForIsSearchFocussed(true)}
@@ -94,11 +95,6 @@ export default ({
               callbackForIsSearchFocussed(true);
               inputRef.current?.focus();
               callback("");
-              dispatch(setSubmittedSearch(""));
-              dispatch(setResults([]));
-              dispatch(setSelectedLocation(null));
-              searchParams.delete("search");
-              setSearchParams({ ...searchParams });
             }}
           >
             <i className="fa fa-times-circle-o fa-lg text-secondary" />

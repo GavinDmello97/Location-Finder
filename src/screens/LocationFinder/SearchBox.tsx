@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { apiCaller } from "../../configs/apiCallers";
+import { filterSearchResults } from "../../configs/utils";
 import {
   setSubmittedSearch,
   setSearch,
+  setLinkParams,
+  setSelectedLocation,
+  addSearchToRecents,
+  setResults,
+  setLoadingStatus,
 } from "../../redux/actionReducers/locationReducer";
 import SearchInput from "./SearchInput";
 
@@ -21,7 +29,7 @@ export default () => {
         searchValue={search}
         callback={(value: string) => dispatch(setSearch(value))}
         callbackForIsSearchFocussed={(status: boolean) =>
-          setTimeout(() => setSearchFocussed(status), status == true ? 0 : 200)
+          setTimeout(() => setSearchFocussed(status), status === true ? 0 : 200)
         }
       />
 
@@ -41,13 +49,34 @@ export default () => {
 
 const RecentSearchListCard = ({ value = "s" }) => {
   const dispatch = useDispatch();
+  const state = useSelector((state: any) => {
+    return { locationState: state.locationActionReducer };
+  });
+  const { linkParams, results } = state.locationState;
+  const [searchParams, setSearchParams] = useSearchParams({});
 
+  const getResultsFromApi = async (search: string) => {
+    await dispatch(setLoadingStatus(true));
+    var features = await apiCaller(search);
+    const filteredData = filterSearchResults(features);
+    await dispatch(setLoadingStatus(false));
+    return filteredData;
+  };
   return (
     <div
       className="col-12 col text-start p-2 search-recent-item px-3 "
-      onClick={() => {
-        dispatch(setSearch(value));
+      onClick={async () => {
+        await dispatch(setSearch(value));
+        await dispatch(setSubmittedSearch(value));
+        linkParams.set("search", value);
+        await dispatch(setLinkParams(linkParams));
+        setSearchParams(linkParams);
+        var results = await getResultsFromApi(value);
+        dispatch(setResults(results));
         dispatch(setSubmittedSearch(value));
+        if (results && results.length > 0) {
+          dispatch(setSelectedLocation(results[0]));
+        }
       }}
     >
       <i className="fa fa-clock-o fa-lg pe-2 "></i>

@@ -39,8 +39,6 @@ export const filterSearchResults = (featureList: any[]) => {
     };
   });
 
-  // console.log("filteredList", filteredList);
-
   return filteredList;
 };
 

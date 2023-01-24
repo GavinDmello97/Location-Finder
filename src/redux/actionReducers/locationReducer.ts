@@ -59,7 +59,6 @@ export const locationSlice = createSlice({
       state.selectedLocation = action.payload;
     },
     setLinkParams: (state, action: { payload: URLSearchParams }) => {
-      console.log("here");
       state.linkParams = action.payload;
     },
   },
