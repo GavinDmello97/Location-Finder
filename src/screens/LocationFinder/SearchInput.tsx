@@ -84,7 +84,7 @@ export default ({
         />
         {searchValue && searchValue.length > 0 && (
           <button
-            className="bg-white border-0"
+            className="bg-white border-0 noselect"
             onClick={() => {
               callbackForIsSearchFocussed(true);
               inputRef.current?.focus();
@@ -99,7 +99,7 @@ export default ({
       <button
         disabled={searchValue.length < 1}
         className={classNames(
-          "p-2 px-3  text-white rounded-0 rounded-end fa-border border-opacity-100  shadow-none",
+          "p-2 px-3  text-white rounded-0 rounded-end fa-border border-opacity-100  shadow-none noselect",
           searchValue && searchValue.length > 0
             ? "bg-primary border-primary"
             : "bg-secondary border-secondary"

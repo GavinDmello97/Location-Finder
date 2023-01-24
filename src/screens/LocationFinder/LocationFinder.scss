@@ -80,7 +80,10 @@
 .leaflet-container {
     width: 100%;
     height: 100%;
-    background-color: rgba(240,240,240,1);}
+    background-color: rgba(240,240,240,1);
+    z-index: 0;
+}
+
 
 
 .clickable:active {
@@ -109,9 +112,18 @@
     
 }
 
-.helper-image {
-    width: 200
+.location-card-type {
+    font-size: 12px;
 }
+
+
+.location-card-additional-info {
+    p {
+        font-size: 14px;
+    }
+}
+
+
 
 .location-card-additional-info-show {
     animation:  0.5s ease slideInFromTop;

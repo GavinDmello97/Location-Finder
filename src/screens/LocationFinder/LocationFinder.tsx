@@ -136,7 +136,7 @@ const LocationFinder = () => {
           className="col-12 col-md-7 col-lg-8  flex-grow-1 p-0 sticky-top  "
           style={{ height: "80vh" }}
         >
-          <div className="leaflet-container " style={{ zIndex: 0 }}>
+          <div className="leaflet-container">
             <Map selectedLocation={selectedLocation} />
           </div>
         </div>
@@ -149,7 +149,7 @@ const NoSearchYet = () => {
   return (
     <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center ">
       <img
-        className="helper-image img-fluid"
+        className="img-fluid"
         src={images.location_search}
         alt="search location"
       />
@@ -166,12 +166,7 @@ const NoSearchYet = () => {
 const NoMatchingResults = () => {
   return (
     <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
-      <img
-        src={images.no_data}
-        style={{ width: 200 }}
-        className=" helper-image img-fluid"
-        alt=""
-      />
+      <img src={images.no_data} className="img-fluid" alt="no results" />
       <p className=" fw-semibold text-center px-3 pt-3 m-0 noselect">
         There were no results found that meet the search and follow under the
         category of administrator.
@@ -219,23 +214,23 @@ const LocationCard = ({ location }: { location: any }) => {
       }}
     >
       <p className="col-12 fw-bold m-0 noselect">{location.display_name}</p>
-      <p className="text-secondary m-0 noselect" style={{ fontSize: 12 }}>
+      <p className="text-secondary m-0 noselect location-card-type">
         {location.type.toUpperCase()}
       </p>
 
       <div
         className={classNames(
-          "col-12",
+          "col-12 location-card-additional-info",
           selectedLocation && selectedLocation.place_id === location.place_id
             ? "location-card-additional-info-show"
             : "d-none",
           "mt-2"
         )}
       >
-        <p className="m-0 noselect" style={{ fontSize: 14 }}>
+        <p className="m-0 noselect">
           <span className="fw-semibold">Population:</span> {location.population}
         </p>
-        <p className="m-0 noselect" style={{ fontSize: 14 }}>
+        <p className="m-0 noselect">
           <span className="fw-semibold">Population Recorded Date:</span>{" "}
           {location.population_date}
         </p>
