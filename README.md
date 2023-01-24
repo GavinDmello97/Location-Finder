@@ -1,7 +1,12 @@
-# Features
+# Location-Finder
+Using React and Typescript, build a single-page web application where the user can search locations and get population information.
+
+**Live Project Link** https://gavindmello97.github.io/Location-Finder/#/
+
+## Features
 Set of features/user flows in this project. All features are build to fullfill every case from the user stories, 
 
-## **User Stories**
+### **User Stories**
 - As a user, I can search for locations using an input field and view a list of results that is filtered to show only administrative boundaries (hint: type should be “administrative”).
 - As a user, I can view an interactive map that defaults to Boston, MA on page load.
 - As a user, I can select a search result and view the location on the map with the boundaries of the polygon visible.
@@ -10,12 +15,12 @@ Set of features/user flows in this project. All features are build to fullfill e
 - As a user, I can visit the link of the app shared to me by my friend and I should see the same search query, results, and selected result on the page.
 - As a user, I can view my recent searches and clicking on one should return me to that search.
 
-## **Additional Features**
+### **Additional Features**
 - Custom Tooltip/Popover to notify and acknoledge "Share" & "copy to clip-board".
 - Map pinch and zoom along with Polygon Popup within boundaries of the selected location.
 - Modal for sharing link of current search with other users and providing clear instructions of copy pasting in the modal.
 
-# Steps to run the project
+## Steps to run the project
 1.  Download the project from github(fork, zip download, etc.) and save it at a location you intend to place it.
 2.  Open Terminal of editor(or VSCode Terminal) or System Terminal and redirect to the project folder.
 3.  Install node modules and clear builds
