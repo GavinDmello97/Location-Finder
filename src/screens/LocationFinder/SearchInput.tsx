@@ -31,12 +31,6 @@ export default ({
   });
   const { submittedSearch, linkParams } = state.locationState;
 
-  // useEffect(() => {
-  //   if (searchValue && searchValue.length > 0) {
-  //     submitSearch();
-  //   }
-  // }, [submittedSearch]);
-
   const inputRef = useRef<null | HTMLInputElement>(null);
 
   const getResultsFromApi = async (search: string) => {
@@ -53,9 +47,13 @@ export default ({
     var results = await getResultsFromApi(searchValue);
     dispatch(setResults(results));
     dispatch(setSubmittedSearch(searchValue));
-    console.log("ReSULTS", results[0]);
     if (results && results.length > 0) {
-      dispatch(setSelectedLocation(results[0]));
+      var result = results[0];
+      linkParams.set("search", searchValue);
+      linkParams.set("activeLocation", result.place_id);
+      await dispatch(setLinkParams(linkParams));
+      setSearchParams(linkParams);
+      dispatch(setSelectedLocation(result));
     }
   };
 
@@ -75,10 +73,6 @@ export default ({
             // Submit search on enter (additional feature)
             if (e.key === "Enter" && searchValue.length > 0) {
               await submitSearch();
-              linkParams.set("search", searchValue);
-              linkParams.delete("activeLocation");
-              await dispatch(setLinkParams(linkParams));
-              setSearchParams(linkParams);
             }
           }}
           type="text"
@@ -112,10 +106,6 @@ export default ({
         )}
         onClick={async () => {
           await submitSearch();
-          linkParams.set("search", searchValue);
-          linkParams.delete("activeLocation");
-          await dispatch(setLinkParams(linkParams));
-          setSearchParams(linkParams);
         }}
       >
         Search

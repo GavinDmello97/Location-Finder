@@ -1,3 +1,15 @@
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Opera and Firefox */
+  }
+
+
 .location-finder-container {
     background-color: rgba(240,240,240,1);
 }
@@ -5,7 +17,6 @@
 .pop-up {
     position: absolute;
     padding: 10px;
-    background-color: red;
     border-radius: 5px;
     right: 0;
     top: 30px;

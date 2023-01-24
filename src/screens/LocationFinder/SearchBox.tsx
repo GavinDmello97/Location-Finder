@@ -75,7 +75,11 @@ const RecentSearchListCard = ({ value = "s" }) => {
         dispatch(setResults(results));
         dispatch(setSubmittedSearch(value));
         if (results && results.length > 0) {
-          dispatch(setSelectedLocation(results[0]));
+          var result = results[0];
+          linkParams.set("activeLocation", result.place_id);
+          await dispatch(setLinkParams(linkParams));
+          setSearchParams(linkParams);
+          dispatch(setSelectedLocation(result));
         }
       }}
     >

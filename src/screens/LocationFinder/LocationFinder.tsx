@@ -128,39 +128,9 @@ const LocationFinder = () => {
           {!isLoading &&
             searchResults &&
             searchResults.length <= 0 &&
-            submittedSearch.length > 0 && (
-              <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
-                <img
-                  src={images.no_data}
-                  style={{ width: 200 }}
-                  className=" helper-image img-fluid"
-                  alt=""
-                />
-                <p className=" fw-semibold text-center px-3 pt-3">
-                  There were no results found that meet the search and follow
-                  under the category of administrator.
-                </p>
-                <em className="fw-lighter text-center mx-4">
-                  Kindly edit your search or type in something new
-                </em>
-              </div>
-            )}
+            submittedSearch.length > 0 && <NoMatchingResults />}
 
-          {submittedSearch.length === 0 && (
-            <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center ">
-              <img
-                className="helper-image img-fluid"
-                src={images.location_search}
-                alt="search location"
-              />
-              <p className=" fw-semibold text-center px-3 pt-3">
-                Search a location
-              </p>
-              <p className="fw-lighter text-center px-3">
-                Use the search box on top to lookup a location
-              </p>
-            </div>
-          )}
+          {submittedSearch.length === 0 && <NoSearchYet />}
         </div>
         <div
           className="col-12 col-md-7 col-lg-8  flex-grow-1 p-0 sticky-top  "
@@ -171,6 +141,44 @@ const LocationFinder = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const NoSearchYet = () => {
+  return (
+    <div className="d-none d-md-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center ">
+      <img
+        className="helper-image img-fluid"
+        src={images.location_search}
+        alt="search location"
+      />
+      <p className=" fw-semibold text-center px-3 pt-3 m-0 noselect">
+        Search a location
+      </p>
+      <p className="fw-lighter text-center px-3 noselect">
+        Use the search box on top to lookup a location
+      </p>
+    </div>
+  );
+};
+
+const NoMatchingResults = () => {
+  return (
+    <div className="d-flex flex-column align-items-center bg-white py-3 flex-grow-1 justify-content-center">
+      <img
+        src={images.no_data}
+        style={{ width: 200 }}
+        className=" helper-image img-fluid"
+        alt=""
+      />
+      <p className=" fw-semibold text-center px-3 pt-3 m-0 noselect">
+        There were no results found that meet the search and follow under the
+        category of administrator.
+      </p>
+      <p className="fw-lighter text-center px-3 noselect">
+        Kindly edit your search or type in something new
+      </p>
     </div>
   );
 };
@@ -210,8 +218,8 @@ const LocationCard = ({ location }: { location: any }) => {
         setSearchParams(linkParams);
       }}
     >
-      <p className="col-12 fw-bold m-0">{location.display_name}</p>
-      <p className="text-secondary m-0" style={{ fontSize: 12 }}>
+      <p className="col-12 fw-bold m-0 noselect">{location.display_name}</p>
+      <p className="text-secondary m-0 noselect" style={{ fontSize: 12 }}>
         {location.type.toUpperCase()}
       </p>
 
@@ -224,10 +232,10 @@ const LocationCard = ({ location }: { location: any }) => {
           "mt-2"
         )}
       >
-        <p className="m-0" style={{ fontSize: 14 }}>
+        <p className="m-0 noselect" style={{ fontSize: 14 }}>
           <span className="fw-semibold">Population:</span> {location.population}
         </p>
-        <p className="m-0" style={{ fontSize: 14 }}>
+        <p className="m-0 noselect" style={{ fontSize: 14 }}>
           <span className="fw-semibold">Population Recorded Date:</span>{" "}
           {location.population_date}
         </p>

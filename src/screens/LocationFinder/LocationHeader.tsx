@@ -47,7 +47,7 @@ const LocationHeader = () => {
     }, 2000);
   };
   return (
-    <div className="col-12 d-flex align-items-center justify-content-between pt-3  py-sm-3">
+    <div className="col-12 d-flex align-items-center justify-content-between pt-3 ">
       <div
         className={classNames(
           "pop-up rounded-3 notify-popup  shadow fa-border border-opacity-10 border-secondary  p-2  ",
@@ -58,7 +58,7 @@ const LocationHeader = () => {
         <span className="text-white">Copied to Clipboard!</span>
       </div>
       <div
-        className="flex-1 d-flex py-3 align-items-center clickable "
+        className="flex-1 d-flex  align-items-center clickable "
         onClick={() => resetToDefault()}
       >
         <i
@@ -66,10 +66,10 @@ const LocationHeader = () => {
           style={{ fontSize: 30 }}
         ></i>
 
-        <p className=" h1 fw-bold p-0 m-0 px-2 d-none d-md-block">
+        <p className=" h1 fw-bold p-0 m-0 px-2 d-none d-md-block noselect">
           Location Finder
         </p>
-        <p className=" h4 fw-bold p-0 m-0 px-2  d-block d-md-none">
+        <p className=" h4 fw-bold p-0 m-0 px-2  d-block d-md-none noselect">
           Location Finder
         </p>
       </div>
@@ -77,18 +77,18 @@ const LocationHeader = () => {
         {submittedSearch.length > 0 && (
           <button className="border-0 rounded-3 p-2 px-3 share-button shadow-sm">
             <i
-              onClick={async () => setShareModalVisibility(!showShareModal)}
-              className="fa fa-share-alt clickable "
+              onClick={async () => setShareModalVisibility(true)}
+              className="fa fa-share-alt clickable noselect "
               aria-hidden="true"
             >
-              <span className="ms-2">Share</span>
+              <span className="ms-2 noselect">Share</span>
             </i>
           </button>
         )}
         {showShareModal && (
           <div className="pop-up rounded-3 bg-white shadow fa-border border-opacity-10 border-secondary">
             <div className="d-flex justify-content-between align-items-center">
-              <p className=" flex-grow-1 fw-bold m-0 text-secondary">
+              <p className=" flex-grow-1 fw-bold m-0 text-secondary noselect">
                 Share with friends
               </p>
               <i
