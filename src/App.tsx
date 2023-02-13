@@ -9,8 +9,8 @@ import { Navigate } from "react-router-dom";
 const App = (props: any) => {
   return (
     <Provider store={store}>
-      <div className=" col-12 d-flex">
-        {/* <p className="bg-primary text-white fw-bold h3 py-2 text-wrap text-center">
+      <div className=" col-12">
+        {/* <p className="bg-primary text-white fw-bold h3 py-2 text-wrap text-center m-0">
           Granular.ai Frontend Developer Take-Home Assignment
         </p> */}
         <Routes>
