@@ -1,7 +1,7 @@
 # Location-Finder
 Using React and Typescript, build a single-page web application where the user can search locations and get population information.
 
-**Live Project Link** https://gavindmello97.github.io/Location-Finder/#/
+**Live Project Link** https://eliterudy.github.io/Location-Finder/#/
 
 ## Features
 Set of features/user flows in this project. All features are build to fullfill every case from the user stories, 
